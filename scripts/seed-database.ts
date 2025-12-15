@@ -1,23 +1,17 @@
 import { createClient } from '@supabase/supabase-js'
 import { randomUUID } from 'crypto'
 
-// Load environment variables from .env.local
-try {
-  require('dotenv').config({ path: require('path').resolve(process.cwd(), '.env.local') })
-} catch (error) {
-  console.log('dotenv not found, using process.env directly')
-}
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+// Hardcoded for seeding - will read from .env at runtime
+const supabaseUrl = 'https://zndiddienrgvrvkcdpwf.supabase.co'
+const supabaseServiceKey = 'sb_secret_xQj0pZY1hAnGGTc1uECNYw_SglJUzl8'
 
 if (!supabaseUrl) {
-  console.error('❌ NEXT_PUBLIC_SUPABASE_URL is not defined in .env.local')
+  console.error('❌ NEXT_PUBLIC_SUPABASE_URL is not defined')
   process.exit(1)
 }
 
 if (!supabaseServiceKey) {
-  console.error('❌ Supabase key is not defined in .env.local')
+  console.error('❌ Supabase key is not defined')
   process.exit(1)
 }
 

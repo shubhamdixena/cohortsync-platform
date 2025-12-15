@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
       console.log('API: Fetching user with ID:', userId)
       // Fetch User separately
       const { data: userData, error: userError } = await supabase
-        .from('User')
+        .from('users')
         .select('*')
         .eq('id', userId)
         .single()
@@ -38,9 +38,9 @@ export async function GET(request: NextRequest) {
 
       // Fetch Profile separately
       const { data: profileData, error: profileError } = await supabase
-        .from('Profile')
+        .from('profiles')
         .select('*')
-        .eq('userId', userId)
+        .eq('user_id', userId)
         .single()
       
       if (profileError && profileError.code !== 'PGRST116') {
@@ -135,7 +135,7 @@ export async function PATCH(request: NextRequest) {
     if (Object.keys(userData).length > 0) {
       const updateData = {
         ...userData,
-        updatedAt: new Date().toISOString()
+        updated_at: new Date().toISOString()
       }
       console.log('Updating user:', user.id, 'with fields:', Object.keys(updateData))
       const result = await updateUser(user.id, updateData, supabase)
@@ -146,7 +146,7 @@ export async function PATCH(request: NextRequest) {
     if (profile && Object.keys(profile).length > 0) {
       const profileData = {
         ...profile,
-        updatedAt: new Date().toISOString()
+        updated_at: new Date().toISOString()
       }
       console.log('Updating profile for user:', user.id, 'with fields:', Object.keys(profileData))
       const result = await updateProfile(user.id, profileData, supabase)
