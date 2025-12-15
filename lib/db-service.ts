@@ -3,16 +3,16 @@ import { Database } from '@/types/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
 
 type Tables = Database['public']['Tables']
-type User = Tables['User']['Row']
-type Post = Tables['Post']['Row']
-type Comment = Tables['Comment']['Row']
-type Message = Tables['Message']['Row']
-type Conversation = Tables['Conversation']['Row']
-type Resource = Tables['Resource']['Row']
-type Profile = Tables['Profile']['Row']
-type Announcement = Tables['Announcement']['Row']
-type Subgroup = Tables['Subgroup']['Row']
-type SubgroupMember = Tables['SubgroupMember']['Row']
+type User = Tables['users']['Row']
+type Post = Tables['posts']['Row']
+type Comment = Tables['comments']['Row']
+type Message = Tables['messages']['Row']
+type Conversation = Tables['conversations']['Row']
+type Resource = Tables['resources']['Row']
+type Profile = Tables['profiles']['Row']
+type Announcement = Tables['announcements']['Row']
+type Subgroup = Tables['subgroups']['Row']
+type SubgroupMember = Tables['subgroup_members']['Row']
 
 // ============================================================================
 // USER OPERATIONS
