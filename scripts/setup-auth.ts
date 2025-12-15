@@ -1,10 +1,9 @@
-
 import { createClient } from '@supabase/supabase-js'
 import fs from 'fs'
 import path from 'path'
 
 // Load environment variables manually
-const envPath = path.resolve(process.cwd(), '.env.local')
+const envPath = path.resolve(process.cwd(), '.env')
 if (fs.existsSync(envPath)) {
   const envConfig = fs.readFileSync(envPath, 'utf8')
   envConfig.split('\n').forEach(line => {
@@ -12,7 +11,9 @@ if (fs.existsSync(envPath)) {
     if (match) {
       const key = match[1].trim()
       const value = match[2].trim().replace(/^["']|["']$/g, '') // Remove quotes
-      process.env[key] = value
+      if (!process.env[key]) {
+        process.env[key] = value
+      }
     }
   })
 }
@@ -21,7 +22,7 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY
 
 if (!supabaseUrl || !supabaseServiceKey) {
-  console.error('Missing Supabase credentials in .env.local')
+  console.error('Missing Supabase credentials in .env')
   process.exit(1)
 }
 
@@ -53,8 +54,6 @@ async function main() {
     console.log(`Processing ${user.email}...`)
 
     // 1. Create/Get Auth User
-    // We try to sign in first to see if exists, or just create
-    // Admin API create user:
     const { data: authUser, error: createError } = await supabase.auth.admin.createUser({
       email: user.email,
       password: user.password,
@@ -88,43 +87,44 @@ async function main() {
 
     console.log(`Auth User ID: ${userId}`)
 
-    // 2. Upsert into public.User
+    // 2. Upsert into public.users
     const { error: dbError } = await supabase
-      .from('User')
+      .from('users')
       .upsert({
         id: userId,
         email: user.email,
         name: user.name,
         initials: user.initials,
         role: user.role,
-        password: 'hashed_password_placeholder', // Required by schema
+        password: 'managed_by_supabase_auth',
         status: 'ACTIVE',
         bio: user.bio,
-        updatedAt: new Date().toISOString()
-      })
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'id' })
 
     if (dbError) {
       console.error(`Error upserting public user ${user.email}:`, dbError)
     } else {
-      console.log(`Successfully synced ${user.email} to public.User`)
+      console.log(`Successfully synced ${user.email} to public.users`)
     }
-    
+
     // 3. Create Profile if not exists
     const { error: profileError } = await supabase
-      .from('Profile')
+      .from('profiles')
       .upsert({
-        userId: userId,
+        id: crypto.randomUUID(),
+        user_id: userId,
         bio: user.bio,
         location: 'Demo City',
         website: 'https://cohortsync.com',
-        skills: ['Demo', 'Testing'],
-        interests: ['Collaboration', 'Development'],
-        updatedAt: new Date().toISOString()
-      }, { onConflict: 'userId' })
-      
-     if (profileError) {
-       console.error(`Error creating profile for ${user.email}:`, profileError)
-     }
+        skills: JSON.stringify(['Demo', 'Testing']),
+        expertise: JSON.stringify(['Collaboration', 'Development']),
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id' })
+
+    if (profileError) {
+      console.error(`Error creating profile for ${user.email}:`, profileError)
+    }
   }
 
   console.log('Done!')

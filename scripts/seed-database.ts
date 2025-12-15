@@ -9,7 +9,7 @@ try {
 }
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 if (!supabaseUrl) {
   console.error('❌ NEXT_PUBLIC_SUPABASE_URL is not defined in .env.local')
@@ -29,207 +29,207 @@ const seedUsers = [
     email: 'rahul.kumar@example.com',
     name: 'Rahul Kumar',
     initials: 'RK',
-    password: 'hashed_password',
+    password: 'managed_by_supabase_auth',
     role: 'MEMBER',
     status: 'ACTIVE',
-    updatedAt: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   },
   {
     id: '2',
     email: 'anjali.patel@example.com',
     name: 'Anjali Patel',
     initials: 'AP',
-    password: 'hashed_password',
+    password: 'managed_by_supabase_auth',
     role: 'MEMBER',
     status: 'ACTIVE',
     location: 'Delhi, India',
-    updatedAt: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   },
   {
     id: '3',
     email: 'sanjay.mehta@example.com',
     name: 'Sanjay Mehta',
     initials: 'SM',
-    password: 'hashed_password',
+    password: 'managed_by_supabase_auth',
     role: 'MEMBER',
     status: 'ACTIVE',
     location: 'Pune, India',
-    updatedAt: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   },
   {
     id: '4',
     email: 'meera.gupta@example.com',
     name: 'Meera Gupta',
     initials: 'MG',
-    password: 'hashed_password',
+    password: 'managed_by_supabase_auth',
     role: 'MEMBER',
     status: 'ACTIVE',
     location: 'Bangalore, India',
-    updatedAt: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   },
   {
     id: '5',
     email: 'vikram.singh@example.com',
     name: 'Vikram Singh',
     initials: 'VS',
-    password: 'hashed_password',
+    password: 'managed_by_supabase_auth',
     role: 'MEMBER',
     status: 'ACTIVE',
     location: 'Jaipur, India',
-    updatedAt: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   },
   {
     id: '6',
     email: 'priya.sharma@example.com',
     name: 'Priya Sharma',
     initials: 'PS',
-    password: 'hashed_password',
+    password: 'managed_by_supabase_auth',
     role: 'MEMBER',
     status: 'ACTIVE',
     location: 'Chennai, India',
-    updatedAt: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   },
   {
     id: '7',
     email: 'admin@example.com',
     name: 'Admin User',
     initials: 'AU',
-    password: 'hashed_password',
+    password: 'managed_by_supabase_auth',
     role: 'ADMIN',
     status: 'ACTIVE',
     location: 'Mumbai, India',
-    updatedAt: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   },
 ]
 
 const seedProfiles = [
   {
     id: randomUUID(),
-    userId: '1',
+    user_id: '1',
     title: 'Tech Entrepreneur',
     cohort: 'Jagriti Yatra 2022',
     bio: 'Passionate about technology and social impact',
     linkedin: 'https://linkedin.com/in/rahulkumar',
     expertise: JSON.stringify(['Technology', 'Entrepreneurship']),
     skills: JSON.stringify(['JavaScript', 'Product Management']),
-    lookingFor: JSON.stringify(['Mentorship', 'Funding']),
+    looking_for: JSON.stringify(['Mentorship', 'Funding']),
     offering: JSON.stringify(['Tech Guidance', 'Networking']),
-    updatedAt: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   },
   {
     id: randomUUID(),
-    userId: '2',
+    user_id: '2',
     title: 'Social Impact Consultant',
     cohort: 'Jagriti Yatra 2021',
     bio: 'Working on rural education initiatives',
     linkedin: 'https://linkedin.com/in/anjalipatel',
     expertise: JSON.stringify(['Education', 'Rural Development']),
     skills: JSON.stringify(['Project Management', 'Community Building']),
-    lookingFor: JSON.stringify(['Partnerships', 'Volunteers']),
+    looking_for: JSON.stringify(['Partnerships', 'Volunteers']),
     offering: JSON.stringify(['Training', 'Consultation']),
-    updatedAt: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   },
   {
     id: randomUUID(),
-    userId: '3',
+    user_id: '3',
     title: 'Sustainable Agriculture Expert',
     cohort: 'Jagriti Yatra 2020',
     bio: 'Promoting sustainable farming practices',
     linkedin: 'https://linkedin.com/in/sanjaymehta',
     expertise: JSON.stringify(['Agriculture', 'Sustainability']),
     skills: JSON.stringify(['Organic Farming', 'Training']),
-    lookingFor: JSON.stringify(['Scale', 'Resources']),
+    looking_for: JSON.stringify(['Scale', 'Resources']),
     offering: JSON.stringify(['Workshops', 'Consulting']),
-    updatedAt: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   },
   {
     id: randomUUID(),
-    userId: '4',
+    user_id: '4',
     title: 'Healthcare Innovation',
     cohort: 'Jagriti Yatra 2022',
     bio: 'Building telemedicine solutions for rural areas',
     linkedin: 'https://linkedin.com/in/meeragupta',
     expertise: JSON.stringify(['Healthcare', 'Technology']),
     skills: JSON.stringify(['Healthcare Tech', 'Product Design']),
-    lookingFor: JSON.stringify(['Collaborators', 'Funding']),
+    looking_for: JSON.stringify(['Collaborators', 'Funding']),
     offering: JSON.stringify(['Healthcare Expertise', 'Tech Support']),
-    updatedAt: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   },
   {
     id: randomUUID(),
-    userId: '5',
+    user_id: '5',
     title: 'Social Entrepreneur',
     cohort: 'Jagriti Yatra 2021',
     bio: 'Creating employment opportunities in rural India',
     linkedin: 'https://linkedin.com/in/vikramsingh',
     expertise: JSON.stringify(['Employment', 'Rural Development']),
     skills: JSON.stringify(['Business Development', 'Strategy']),
-    lookingFor: JSON.stringify(['Partners', 'Investors']),
+    looking_for: JSON.stringify(['Partners', 'Investors']),
     offering: JSON.stringify(['Mentorship', 'Business Guidance']),
-    updatedAt: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   },
   {
     id: randomUUID(),
-    userId: '6',
+    user_id: '6',
     title: 'Education Technology',
     cohort: 'Jagriti Yatra 2022',
     bio: 'Building digital learning platforms',
     linkedin: 'https://linkedin.com/in/priyasharma',
     expertise: JSON.stringify(['Education', 'Technology']),
     skills: JSON.stringify(['EdTech', 'UX Design']),
-    lookingFor: JSON.stringify(['Co-founders', 'Advisors']),
+    looking_for: JSON.stringify(['Co-founders', 'Advisors']),
     offering: JSON.stringify(['Tech Expertise', 'Design Help']),
-    updatedAt: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   },
   {
     id: randomUUID(),
-    userId: '7',
+    user_id: '7',
     title: 'Community Administrator',
     cohort: 'Staff',
     bio: 'Managing the community platform',
     expertise: JSON.stringify(['Community Management', 'Operations']),
     skills: JSON.stringify(['Administration', 'Coordination']),
-    lookingFor: JSON.stringify([]),
+    looking_for: JSON.stringify([]),
     offering: JSON.stringify(['Support', 'Guidance']),
-    updatedAt: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   },
 ]
 
 const seedPosts = [
   {
     id: randomUUID(),
-    authorId: '1',
+    author_id: '1',
     content: 'Just finished an incredible mentoring session with some amazing young entrepreneurs. The energy and passion they bring to solving real-world problems is truly inspiring! 🚀',
     category: 'discussion',
-    updatedAt: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   },
   {
     id: randomUUID(),
-    authorId: '2',
+    author_id: '2',
     content: 'Excited to share that our rural education initiative has reached 500+ children across 15 villages! This wouldn\'t have been possible without the incredible support from the Jagriti community. Thank you all! 🙏',
     category: 'achievement',
-    updatedAt: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   },
   {
     id: randomUUID(),
-    authorId: '3',
+    author_id: '3',
     content: 'Sharing some insights from our recent workshop on sustainable farming practices. The response from local farmers has been overwhelming! Here are the key takeaways: 1) Organic composting can increase yield by 30% 2) Water conservation techniques can reduce usage by 40% 3) Crop rotation improves soil health significantly',
     category: 'discussion',
-    updatedAt: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   },
   {
     id: randomUUID(),
-    authorId: '4',
+    author_id: '4',
     content: 'Looking for collaborators on a new telemedicine project aimed at providing healthcare access to remote areas. If you\'re working in healthcare tech or have experience with rural communities, let\'s connect!',
     category: 'opportunity',
-    updatedAt: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   },
   {
     id: randomUUID(),
-    authorId: '5',
+    author_id: '5',
     content: 'Attending an amazing conference on social entrepreneurship this week in Delhi! Would love to meet fellow Jagriti community members. Coffee anyone? ☕',
     category: 'event',
-    updatedAt: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   },
 ]
 
@@ -241,10 +241,10 @@ const seedResources = [
     category: 'business',
     type: 'document',
     url: 'https://example.com/impact-guide.pdf',
-    uploadedById: '2',
+    uploaded_by_id: '2',
     tags: JSON.stringify(['impact', 'measurement', 'reporting']),
-    accessLevel: 'MEMBERS_ONLY',
-    updatedAt: new Date().toISOString(),
+    access_level: 'MEMBERS_ONLY',
+    updated_at: new Date().toISOString(),
   },
   {
     id: randomUUID(),
@@ -253,10 +253,10 @@ const seedResources = [
     category: 'business',
     type: 'document',
     url: 'https://example.com/fundraising-template.xlsx',
-    uploadedById: '1',
+    uploaded_by_id: '1',
     tags: JSON.stringify(['fundraising', 'strategy', 'template']),
-    accessLevel: 'MEMBERS_ONLY',
-    updatedAt: new Date().toISOString(),
+    access_level: 'MEMBERS_ONLY',
+    updated_at: new Date().toISOString(),
   },
   {
     id: randomUUID(),
@@ -265,10 +265,10 @@ const seedResources = [
     category: 'technology',
     type: 'video',
     url: 'https://example.com/agriculture-course',
-    uploadedById: '3',
+    uploaded_by_id: '3',
     tags: JSON.stringify(['agriculture', 'sustainability', 'training']),
-    accessLevel: 'MEMBERS_ONLY',
-    updatedAt: new Date().toISOString(),
+    access_level: 'MEMBERS_ONLY',
+    updated_at: new Date().toISOString(),
   },
 ]
 
@@ -279,8 +279,8 @@ const seedAnnouncements = [
     content: 'Welcome to our community platform. We\'re excited to have you here. This is a space to connect, collaborate, and grow together.',
     priority: 'HIGH',
     status: 'PUBLISHED',
-    createdById: '7',
-    updatedAt: new Date().toISOString(),
+    created_by_id: '7',
+    updated_at: new Date().toISOString(),
   },
   {
     id: randomUUID(),
@@ -288,8 +288,8 @@ const seedAnnouncements = [
     content: 'We\'ve launched our resource library with guides, templates, and learning materials. Check it out in the Resources section!',
     priority: 'NORMAL',
     status: 'PUBLISHED',
-    createdById: '7',
-    updatedAt: new Date().toISOString(),
+    created_by_id: '7',
+    updated_at: new Date().toISOString(),
   },
 ]
 
@@ -300,9 +300,9 @@ async function seedDatabase() {
     // Seed Users
     console.log('👥 Seeding users...')
     const { error: usersError } = await supabase
-      .from('User')
+      .from('users')
       .upsert(seedUsers, { onConflict: 'id' })
-    
+
     if (usersError) {
       console.error('Error seeding users:', usersError)
     } else {
@@ -312,9 +312,9 @@ async function seedDatabase() {
     // Seed Profiles
     console.log('📋 Seeding profiles...')
     const { error: profilesError } = await supabase
-      .from('Profile')
-      .upsert(seedProfiles, { onConflict: 'userId' })
-    
+      .from('profiles')
+      .upsert(seedProfiles, { onConflict: 'user_id' })
+
     if (profilesError) {
       console.error('Error seeding profiles:', profilesError)
     } else {
@@ -324,9 +324,9 @@ async function seedDatabase() {
     // Seed Posts
     console.log('📝 Seeding posts...')
     const { error: postsError } = await supabase
-      .from('Post')
+      .from('posts')
       .insert(seedPosts)
-    
+
     if (postsError && postsError.code !== '23505') { // Ignore duplicate key errors
       console.error('Error seeding posts:', postsError)
     } else {
@@ -336,9 +336,9 @@ async function seedDatabase() {
     // Seed Resources
     console.log('📚 Seeding resources...')
     const { error: resourcesError } = await supabase
-      .from('Resource')
+      .from('resources')
       .insert(seedResources)
-    
+
     if (resourcesError && resourcesError.code !== '23505') {
       console.error('Error seeding resources:', resourcesError)
     } else {
@@ -348,9 +348,9 @@ async function seedDatabase() {
     // Seed Announcements
     console.log('📢 Seeding announcements...')
     const { error: announcementsError } = await supabase
-      .from('Announcement')
+      .from('announcements')
       .insert(seedAnnouncements)
-    
+
     if (announcementsError && announcementsError.code !== '23505') {
       console.error('Error seeding announcements:', announcementsError)
     } else {

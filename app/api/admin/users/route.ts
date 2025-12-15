@@ -17,7 +17,7 @@ export async function PATCH(request: NextRequest) {
 
     // Check if user is admin
     const { data: userData } = await supabase
-      .from('User')
+      .from('users')
       .select('role')
       .eq('id', user.id)
       .single()
@@ -36,7 +36,7 @@ export async function PATCH(request: NextRequest) {
     const updateData = {
       status,
       ...otherUpdates,
-      updatedAt: new Date().toISOString()
+      updated_at: new Date().toISOString()
     }
     
     console.log('Admin updating user', userId, 'with:', updateData)

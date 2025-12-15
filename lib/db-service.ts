@@ -24,8 +24,8 @@ export async function getCurrentUser(supabaseClient?: SupabaseClient) {
   if (!user) return null
 
   const { data, error } = await client
-    .from('User')
-    .select('*, profile:Profile(*)')
+    .from('users')
+    .select('*, profile:profiles(*)')
     .eq('id', user.id)
     .single()
 
@@ -36,8 +36,8 @@ export async function getCurrentUser(supabaseClient?: SupabaseClient) {
 export async function getUserById(userId: string, supabaseClient?: SupabaseClient) {
   const client = supabaseClient || supabase
   const { data, error } = await client
-    .from('User')
-    .select('*, profile:Profile(*)')
+    .from('users')
+    .select('*, profile:profiles(*)')
     .eq('id', userId)
     .single()
 
@@ -48,18 +48,18 @@ export async function getUserById(userId: string, supabaseClient?: SupabaseClien
 export async function getAllUsers(supabaseClient?: SupabaseClient) {
   const client = supabaseClient || supabase
   const { data, error } = await client
-    .from('User')
-    .select('*, profile:Profile(*)')
-    .order('createdAt', { ascending: false })
+    .from('users')
+    .select('*, profile:profiles(*)')
+    .order('created_at', { ascending: false })
 
   if (error) throw error
   return data
 }
 
-export async function updateUser(userId: string, updates: Partial<Tables['User']['Update']>, supabaseClient?: SupabaseClient) {
+export async function updateUser(userId: string, updates: any, supabaseClient?: SupabaseClient) {
   const client = supabaseClient || supabase
   const { data, error } = await client
-    .from('User')
+    .from('users')
     .update(updates)
     .eq('id', userId)
     .select()
@@ -69,13 +69,13 @@ export async function updateUser(userId: string, updates: Partial<Tables['User']
   return data
 }
 
-export async function updateProfile(userId: string, updates: Partial<Tables['Profile']['Update']>, supabaseClient?: SupabaseClient) {
+export async function updateProfile(userId: string, updates: any, supabaseClient?: SupabaseClient) {
   const client = supabaseClient || supabase
   // First try to get existing profile
   const { data: existingProfile, error: selectError } = await client
-    .from('Profile')
+    .from('profiles')
     .select('id')
-    .eq('userId', userId)
+    .eq('user_id', userId)
     .single()
 
   if (selectError && selectError.code !== 'PGRST116') {
@@ -86,9 +86,9 @@ export async function updateProfile(userId: string, updates: Partial<Tables['Pro
   if (existingProfile) {
     // Update existing profile
     const { data, error } = await client
-      .from('Profile')
+      .from('profiles')
       .update(updates)
-      .eq('userId', userId)
+      .eq('user_id', userId)
       .select()
       .single()
 
@@ -97,10 +97,11 @@ export async function updateProfile(userId: string, updates: Partial<Tables['Pro
   } else {
     // Create new profile
     const { data, error } = await client
-      .from('Profile')
+      .from('profiles')
       .insert({
         id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2) + Date.now().toString(36),
-        userId,
+        user_id: userId,
+        updated_at: new Date().toISOString(),
         ...updates
       })
       .select()
@@ -118,23 +119,23 @@ export async function updateProfile(userId: string, updates: Partial<Tables['Pro
 export async function getPosts(limit = 50, supabaseClient?: SupabaseClient) {
   const client = supabaseClient || supabase
   const { data, error } = await client
-    .from('Post')
+    .from('posts')
     .select(`
       *,
-      author:User(
-        id, 
-        name, 
-        initials, 
-        avatar, 
+      author:users(
+        id,
+        name,
+        initials,
+        avatar,
         role,
-        profile:Profile(title)
+        profile:profiles(title)
       ),
-      comments:Comment(
+      comments:comments(
         *,
-        author:User(id, name, initials, avatar)
+        author:users(id, name, initials, avatar)
       )
     `)
-    .order('createdAt', { ascending: false })
+    .order('created_at', { ascending: false })
     .limit(limit)
 
   if (error) throw error
@@ -152,27 +153,27 @@ export async function getPosts(limit = 50, supabaseClient?: SupabaseClient) {
 export async function getPostById(postId: string, supabaseClient?: SupabaseClient) {
   const client = supabaseClient || supabase
   const { data, error } = await client
-    .from('Post')
+    .from('posts')
     .select(`
       *,
-      author:User(
-        id, 
-        name, 
-        initials, 
-        avatar, 
+      author:users(
+        id,
+        name,
+        initials,
+        avatar,
         role,
-        profile:Profile(title)
+        profile:profiles(title)
       ),
-      comments:Comment(
+      comments:comments(
         *,
-        author:User(id, name, initials, avatar)
+        author:users(id, name, initials, avatar)
       )
     `)
     .eq('id', postId)
     .single()
 
   if (error) throw error
-  
+
   return {
     ...data,
     author: {
@@ -182,14 +183,14 @@ export async function getPostById(postId: string, supabaseClient?: SupabaseClien
   }
 }
 
-export async function createPost(post: Tables['Post']['Insert'], supabaseClient?: SupabaseClient) {
+export async function createPost(post: any, supabaseClient?: SupabaseClient) {
   const client = supabaseClient || supabase
   const { data, error } = await client
-    .from('Post')
+    .from('posts')
     .insert(post)
     .select(`
       *,
-      author:User(id, name, initials, avatar, role)
+      author:users(id, name, initials, avatar, role)
     `)
     .single()
 
@@ -197,10 +198,10 @@ export async function createPost(post: Tables['Post']['Insert'], supabaseClient?
   return data
 }
 
-export async function updatePost(postId: string, updates: Tables['Post']['Update'], supabaseClient?: SupabaseClient) {
+export async function updatePost(postId: string, updates: any, supabaseClient?: SupabaseClient) {
   const client = supabaseClient || supabase
   const { data, error } = await client
-    .from('Post')
+    .from('posts')
     .update(updates)
     .eq('id', postId)
     .select()
@@ -213,7 +214,7 @@ export async function updatePost(postId: string, updates: Tables['Post']['Update
 export async function deletePost(postId: string, supabaseClient?: SupabaseClient) {
   const client = supabaseClient || supabase
   const { error } = await client
-    .from('Post')
+    .from('posts')
     .delete()
     .eq('id', postId)
 
@@ -224,14 +225,14 @@ export async function deletePost(postId: string, supabaseClient?: SupabaseClient
 // COMMENT OPERATIONS
 // ============================================================================
 
-export async function createComment(comment: Tables['Comment']['Insert'], supabaseClient?: SupabaseClient) {
+export async function createComment(comment: any, supabaseClient?: SupabaseClient) {
   const client = supabaseClient || supabase
   const { data, error } = await client
-    .from('Comment')
+    .from('comments')
     .insert(comment)
     .select(`
       *,
-      author:User(id, name, initials, avatar)
+      author:users(id, name, initials, avatar)
     `)
     .single()
 
@@ -242,7 +243,7 @@ export async function createComment(comment: Tables['Comment']['Insert'], supaba
 export async function deleteComment(commentId: string, supabaseClient?: SupabaseClient) {
   const client = supabaseClient || supabase
   const { error } = await client
-    .from('Comment')
+    .from('comments')
     .delete()
     .eq('id', commentId)
 
@@ -256,13 +257,13 @@ export async function deleteComment(commentId: string, supabaseClient?: Supabase
 export async function getConversations(userId: string, supabaseClient?: SupabaseClient) {
   const client = supabaseClient || supabase
   const { data, error } = await client
-    .from('Conversation')
+    .from('conversations')
     .select(`
       *,
-      messages:Message(*)
+      messages:messages(*)
     `)
-    .contains('participantIds', userId)
-    .order('lastMessageAt', { ascending: false })
+    .contains('participant_ids', userId)
+    .order('last_message_at', { ascending: false })
 
   if (error) throw error
   return data
@@ -271,22 +272,22 @@ export async function getConversations(userId: string, supabaseClient?: Supabase
 export async function getConversationMessages(conversationId: string, supabaseClient?: SupabaseClient) {
   const client = supabaseClient || supabase
   const { data, error } = await client
-    .from('Message')
+    .from('messages')
     .select(`
       *,
-      sender:User(id, name, initials, avatar)
+      sender:users(id, name, initials, avatar)
     `)
-    .eq('conversationId', conversationId)
-    .order('createdAt', { ascending: true })
+    .eq('conversation_id', conversationId)
+    .order('created_at', { ascending: true })
 
   if (error) throw error
   return data
 }
 
-export async function createConversation(conversation: Tables['Conversation']['Insert'], supabaseClient?: SupabaseClient) {
+export async function createConversation(conversation: any, supabaseClient?: SupabaseClient) {
   const client = supabaseClient || supabase
   const { data, error } = await client
-    .from('Conversation')
+    .from('conversations')
     .insert(conversation)
     .select()
     .single()
@@ -295,24 +296,24 @@ export async function createConversation(conversation: Tables['Conversation']['I
   return data
 }
 
-export async function sendMessage(message: Tables['Message']['Insert'], supabaseClient?: SupabaseClient) {
+export async function sendMessage(message: any, supabaseClient?: SupabaseClient) {
   const client = supabaseClient || supabase
   const { data, error } = await client
-    .from('Message')
+    .from('messages')
     .insert(message)
     .select(`
       *,
-      sender:User(id, name, initials, avatar)
+      sender:users(id, name, initials, avatar)
     `)
     .single()
 
   if (error) throw error
 
-  // Update conversation lastMessageAt
+  // Update conversation last_message_at
   await client
-    .from('Conversation')
-    .update({ lastMessageAt: new Date().toISOString() })
-    .eq('id', message.conversationId)
+    .from('conversations')
+    .update({ last_message_at: new Date().toISOString() })
+    .eq('id', message.conversation_id)
 
   return data
 }
@@ -320,8 +321,8 @@ export async function sendMessage(message: Tables['Message']['Insert'], supabase
 export async function markMessageAsRead(messageId: string, supabaseClient?: SupabaseClient) {
   const client = supabaseClient || supabase
   const { error } = await client
-    .from('Message')
-    .update({ isRead: true, readAt: new Date().toISOString() })
+    .from('messages')
+    .update({ is_read: true, read_at: new Date().toISOString() })
     .eq('id', messageId)
 
   if (error) throw error
@@ -334,25 +335,25 @@ export async function markMessageAsRead(messageId: string, supabaseClient?: Supa
 export async function getResources(supabaseClient?: SupabaseClient) {
   const client = supabaseClient || supabase
   const { data, error } = await client
-    .from('Resource')
+    .from('resources')
     .select(`
       *,
-      uploadedBy:User(id, name, initials, avatar)
+      uploadedBy:users!uploaded_by_id(id, name, initials, avatar)
     `)
-    .order('createdAt', { ascending: false })
+    .order('created_at', { ascending: false })
 
   if (error) throw error
   return data
 }
 
-export async function createResource(resource: Tables['Resource']['Insert'], supabaseClient?: SupabaseClient) {
+export async function createResource(resource: any, supabaseClient?: SupabaseClient) {
   const client = supabaseClient || supabase
   const { data, error } = await client
-    .from('Resource')
+    .from('resources')
     .insert(resource)
     .select(`
       *,
-      uploadedBy:User(id, name, initials, avatar)
+      uploadedBy:users!uploaded_by_id(id, name, initials, avatar)
     `)
     .single()
 
@@ -360,10 +361,10 @@ export async function createResource(resource: Tables['Resource']['Insert'], sup
   return data
 }
 
-export async function updateResource(resourceId: string, updates: Tables['Resource']['Update'], supabaseClient?: SupabaseClient) {
+export async function updateResource(resourceId: string, updates: any, supabaseClient?: SupabaseClient) {
   const client = supabaseClient || supabase
   const { data, error } = await client
-    .from('Resource')
+    .from('resources')
     .update(updates)
     .eq('id', resourceId)
     .select()
@@ -376,7 +377,7 @@ export async function updateResource(resourceId: string, updates: Tables['Resour
 export async function deleteResource(resourceId: string, supabaseClient?: SupabaseClient) {
   const client = supabaseClient || supabase
   const { error } = await client
-    .from('Resource')
+    .from('resources')
     .delete()
     .eq('id', resourceId)
 
@@ -386,14 +387,14 @@ export async function deleteResource(resourceId: string, supabaseClient?: Supaba
 export async function incrementResourceDownloads(resourceId: string, supabaseClient?: SupabaseClient) {
   const client = supabaseClient || supabase
   const { data: resource } = await client
-    .from('Resource')
+    .from('resources')
     .select('downloads')
     .eq('id', resourceId)
     .single()
 
   if (resource) {
     await client
-      .from('Resource')
+      .from('resources')
       .update({ downloads: (resource.downloads || 0) + 1 })
       .eq('id', resourceId)
   }
@@ -406,18 +407,18 @@ export async function incrementResourceDownloads(resourceId: string, supabaseCli
 export async function getAnnouncements(supabaseClient?: SupabaseClient) {
   const client = supabaseClient || supabase
   const { data, error } = await client
-    .from('Announcement')
+    .from('announcements')
     .select('*')
-    .order('createdAt', { ascending: false })
+    .order('created_at', { ascending: false })
 
   if (error) throw error
   return data
 }
 
-export async function createAnnouncement(announcement: Tables['Announcement']['Insert'], supabaseClient?: SupabaseClient) {
+export async function createAnnouncement(announcement: any, supabaseClient?: SupabaseClient) {
   const client = supabaseClient || supabase
   const { data, error } = await client
-    .from('Announcement')
+    .from('announcements')
     .insert(announcement)
     .select()
     .single()
@@ -426,10 +427,10 @@ export async function createAnnouncement(announcement: Tables['Announcement']['I
   return data
 }
 
-export async function updateAnnouncement(announcementId: string, updates: Tables['Announcement']['Update'], supabaseClient?: SupabaseClient) {
+export async function updateAnnouncement(announcementId: string, updates: any, supabaseClient?: SupabaseClient) {
   const client = supabaseClient || supabase
   const { data, error } = await client
-    .from('Announcement')
+    .from('announcements')
     .update(updates)
     .eq('id', announcementId)
     .select()
@@ -442,7 +443,7 @@ export async function updateAnnouncement(announcementId: string, updates: Tables
 export async function deleteAnnouncement(announcementId: string, supabaseClient?: SupabaseClient) {
   const client = supabaseClient || supabase
   const { error } = await client
-    .from('Announcement')
+    .from('announcements')
     .delete()
     .eq('id', announcementId)
 
@@ -456,24 +457,24 @@ export async function deleteAnnouncement(announcementId: string, supabaseClient?
 export async function getSubgroups(supabaseClient?: SupabaseClient) {
   const client = supabaseClient || supabase
   const { data, error } = await client
-    .from('Subgroup')
+    .from('subgroups')
     .select(`
       *,
-      members:SubgroupMember(
+      members:subgroup_members(
         *,
-        user:User(id, name, initials, avatar)
+        user:users(id, name, initials, avatar)
       )
     `)
-    .order('createdAt', { ascending: false })
+    .order('created_at', { ascending: false })
 
   if (error) throw error
   return data
 }
 
-export async function createSubgroup(subgroup: Tables['Subgroup']['Insert'], supabaseClient?: SupabaseClient) {
+export async function createSubgroup(subgroup: any, supabaseClient?: SupabaseClient) {
   const client = supabaseClient || supabase
   const { data, error } = await client
-    .from('Subgroup')
+    .from('subgroups')
     .insert(subgroup)
     .select()
     .single()
@@ -485,11 +486,11 @@ export async function createSubgroup(subgroup: Tables['Subgroup']['Insert'], sup
 export async function joinSubgroup(subgroupId: string, userId: string, supabaseClient?: SupabaseClient) {
   const client = supabaseClient || supabase
   const { data, error } = await client
-    .from('SubgroupMember')
+    .from('subgroup_members')
     .insert({
       id: crypto.randomUUID(),
-      subgroupId,
-      userId,
+      subgroup_id: subgroupId,
+      user_id: userId,
       role: 'MEMBER'
     })
     .select()
@@ -502,10 +503,10 @@ export async function joinSubgroup(subgroupId: string, userId: string, supabaseC
 export async function leaveSubgroup(subgroupId: string, userId: string, supabaseClient?: SupabaseClient) {
   const client = supabaseClient || supabase
   const { error } = await client
-    .from('SubgroupMember')
+    .from('subgroup_members')
     .delete()
-    .eq('subgroupId', subgroupId)
-    .eq('userId', userId)
+    .eq('subgroup_id', subgroupId)
+    .eq('user_id', userId)
 
   if (error) throw error
 }
@@ -520,18 +521,18 @@ export async function searchAll(query: string, supabaseClient?: SupabaseClient) 
 
   const [users, posts, resources] = await Promise.all([
     client
-      .from('User')
-      .select('*, profile:Profile(*)')
+      .from('users')
+      .select('*, profile:profiles(*)')
       .or(`name.ilike.%${lowerQuery}%,email.ilike.%${lowerQuery}%,bio.ilike.%${lowerQuery}%`)
       .limit(10),
     client
-      .from('Post')
-      .select('*, author:User(id, name, initials, avatar)')
+      .from('posts')
+      .select('*, author:users(id, name, initials, avatar)')
       .ilike('content', `%${lowerQuery}%`)
       .limit(10),
     client
-      .from('Resource')
-      .select('*, uploadedBy:User(id, name, initials, avatar)')
+      .from('resources')
+      .select('*, uploadedBy:users!uploaded_by_id(id, name, initials, avatar)')
       .or(`title.ilike.%${lowerQuery}%,description.ilike.%${lowerQuery}%`)
       .limit(10)
   ])

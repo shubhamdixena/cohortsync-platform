@@ -150,14 +150,16 @@ export default function RegisterPage() {
             status: 'PENDING'
           })
           const { error: userError } = await supabase
-            .from('User')
+            .from('users')
             .insert({
               id: authData.user.id,
               email: formData.email,
               name: `${formData.firstName} ${formData.lastName}`,
               initials: userInitials,
               role: userRole,
-              status: 'PENDING' // Admin needs to approve
+              status: 'PENDING', // Admin needs to approve
+              password: 'managed_by_supabase_auth',
+              updated_at: new Date().toISOString()
             })
 
           if (userError) {
@@ -178,16 +180,18 @@ export default function RegisterPage() {
           // Create Profile record
           console.log('Step 4: Creating Profile record')
           const { error: profileError } = await supabase
-            .from('Profile')
+            .from('profiles')
             .insert({
-              userId: authData.user.id,
+              id: crypto.randomUUID(),
+              user_id: authData.user.id,
               title: formData.headline,
               bio: formData.location,
               linkedin: formData.linkedinProfile,
               expertise: JSON.stringify([]),
               skills: JSON.stringify([]),
-              lookingFor: JSON.stringify([]),
-              offering: JSON.stringify([])
+              looking_for: JSON.stringify([]),
+              offering: JSON.stringify([]),
+              updated_at: new Date().toISOString()
             })
 
           if (profileError) {

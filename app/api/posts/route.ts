@@ -30,13 +30,13 @@ export async function POST(request: NextRequest) {
 
     const post = await createPost({
       id: crypto.randomUUID(),
-      authorId: user.id,
+      author_id: user.id,
       content: body.content,
       image: body.image || null,
       tags: body.tags || null,
       category: body.category || null,
       likes: 0,
-      updatedAt: new Date().toISOString()
+      updated_at: new Date().toISOString()
     }, supabase)
 
     return NextResponse.json(post, { status: 201 })
