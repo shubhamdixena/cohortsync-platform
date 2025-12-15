@@ -1,0 +1,361 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// AUTHENTICATION & USERS
+// ============================================================================
+
+enum UserRole {
+  MEMBER
+  ADMIN
+}
+
+enum MemberStatus {
+  ACTIVE
+  PENDING
+  SUSPENDED
+  INACTIVE
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String?  // Managed by Supabase Auth, not stored here
+  name      String
+  initials  String
+  role      UserRole @default(MEMBER)
+  status    MemberStatus @default(ACTIVE)
+  avatar    String?
+  bio       String?
+  location  String?
+  phone     String?
+  
+  // Relations
+  profile   Profile?
+  posts     Post[]
+  comments  Comment[]
+  messages  Message[]
+  resources Resource[]
+  subgroupMemberships SubgroupMember[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Indexes for performance
+  @@index([email])
+  @@index([status])
+  @@index([role])
+}
+
+model Profile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  title     String?
+  bio       String?
+  phone     String?
+  website   String?
+  linkedin  String?
+  twitter   String?
+  github    String?
+  
+  skills    String? // JSON array stored as string
+  expertise String? // JSON array stored as string
+  
+  experience String? // JSON array stored as string
+  education  String? // JSON array stored as string
+  
+  lookingFor String? // JSON array stored as string
+  offering   String? // JSON array stored as string
+  
+  joinedDate DateTime?
+  cohort     String? // For Chevening, this would be the year or batch
+  
+  updatedAt DateTime @updatedAt
+}
+
+// ============================================================================
+// COMMUNITY FEATURES
+// ============================================================================
+
+model Post {
+  id        String   @id @default(cuid())
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  content   String
+  image     String?
+  
+  tags      String? // JSON array stored as string
+  category  String? // "discussion", "hiring", "resource", "event", "referral"
+  
+  likes     Int      @default(0)
+  
+  comments  Comment[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Indexes
+  @@index([authorId])
+  @@index([category])
+  @@index([createdAt])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  content   String
+  likes     Int      @default(0)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ============================================================================
+// MESSAGING
+// ============================================================================
+
+enum ConversationType {
+  DIRECT
+  GROUP
+}
+
+model Conversation {
+  id           String   @id @default(cuid())
+  type         ConversationType
+  
+  // For group conversations
+  name         String?
+  description  String?
+  
+  // Store participant IDs as JSON for flexibility
+  participantIds String // JSON array stored as string
+  
+  messages     Message[]
+  
+  lastMessageAt DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  // Indexes
+  @@index([type])
+  @@index([lastMessageAt])
+}
+
+model Message {
+  id             String   @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  
+  senderId       String
+  sender         User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  
+  content        String
+  
+  isRead         Boolean  @default(false)
+  readAt         DateTime?
+  
+  createdAt      DateTime @default(now())
+  
+  // Indexes
+  @@index([conversationId])
+  @@index([senderId])
+  @@index([isRead])
+  @@index([createdAt])
+}
+
+// ============================================================================
+// RESOURCES
+// ============================================================================
+
+enum AccessLevel {
+  PUBLIC
+  MEMBERS_ONLY
+  ADMIN_ONLY
+}
+
+model Resource {
+  id           String   @id @default(cuid())
+  title        String
+  description  String?
+  
+  type         String   // "pdf", "video", "article", "link", "document"
+  category     String
+  
+  url          String?
+  fileUrl      String?  // For uploaded files
+  fileSize     Int?     // In bytes
+  
+  downloads    Int      @default(0)
+  featured     Boolean  @default(false)
+  
+  accessLevel  AccessLevel @default(MEMBERS_ONLY)
+  
+  uploadedById String
+  uploadedBy   User     @relation(fields: [uploadedById], references: [id], onDelete: Cascade)
+  
+  tags         String?  // JSON array stored as string
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  // Indexes
+  @@index([uploadedById])
+  @@index([category])
+  @@index([accessLevel])
+  @@index([featured])
+}
+
+// ============================================================================
+// SUB-GROUPS / INTEREST GROUPS
+// ============================================================================
+
+enum SubgroupRole {
+  MEMBER
+  MODERATOR
+}
+
+model Subgroup {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  
+  type        String   // "interest", "skill", "location", "project"
+  category    String?  // Added to match UI "category"
+  
+  icon        String?
+  color       String?
+  image       String?  // Added for cohort image
+  
+  location    String?  // Added for cohort location
+  isActive    Boolean  @default(true) // Added for cohort status
+  tags        String?  // JSON array stored as string
+  
+  moderators  String? // JSON array of user IDs
+  
+  members     SubgroupMember[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Indexes
+  @@index([type])
+}
+
+model SubgroupMember {
+  id          String   @id @default(cuid())
+  subgroupId  String
+  subgroup    Subgroup @relation(fields: [subgroupId], references: [id], onDelete: Cascade)
+  
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  role        SubgroupRole @default(MEMBER)
+  joinedAt    DateTime @default(now())
+  
+  @@unique([subgroupId, userId])
+  @@index([subgroupId])
+  @@index([userId])
+}
+
+// ============================================================================
+// ANNOUNCEMENTS & ADMIN
+// ============================================================================
+
+enum AnnouncementStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum AnnouncementPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+model Announcement {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  
+  priority  AnnouncementPriority @default(NORMAL)
+  status    AnnouncementStatus @default(DRAFT)
+  
+  category      String?
+  targetAudience String?
+  views         Int      @default(0)
+  reactions     Int      @default(0)
+
+  createdById String
+  
+  publishedAt DateTime?
+  expiresAt   DateTime?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ============================================================================
+// MODERATION & ADMIN
+// ============================================================================
+
+enum ReportStatus {
+  PENDING
+  REVIEWING
+  RESOLVED
+  DISMISSED
+}
+
+model ModeratedContent {
+  id        String   @id @default(cuid())
+  
+  contentType String // "post", "comment", "message"
+  contentId   String // ID of the post/comment/message
+  
+  reportedBy  String // User ID
+  reason      String
+  description String?
+  
+  status      ReportStatus @default(PENDING)
+  
+  actionTaken String? // Description of moderation action
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ============================================================================
+// AUDIT LOG
+// ============================================================================
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String   // "create", "update", "delete", "approve", "reject"
+  
+  userId    String   // Who performed the action
+  
+  entityType String  // "member", "post", "resource", etc.
+  entityId   String  // ID of the entity
+  
+  changes   String?  // JSON of what changed
+  
+  createdAt DateTime @default(now())
+}

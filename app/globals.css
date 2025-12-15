@@ -1,0 +1,256 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-gray-50 text-gray-900;
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.6;
+    letter-spacing: -0.011em;
+  }
+
+  /* Typography Scale - Compact Business Design */
+  h1 {
+    @apply text-xl font-bold tracking-tight leading-tight text-gray-900;
+    letter-spacing: -0.025em;
+  }
+
+  h2 {
+    @apply text-lg font-semibold tracking-tight leading-tight text-gray-900;
+    letter-spacing: -0.022em;
+  }
+
+  h3 {
+    @apply text-base font-semibold tracking-tight leading-snug text-gray-900;
+    letter-spacing: -0.019em;
+  }
+
+  h4 {
+    @apply text-sm font-semibold tracking-tight leading-snug text-gray-900;
+    letter-spacing: -0.016em;
+  }
+
+  h5 {
+    @apply text-sm font-medium tracking-tight leading-snug text-gray-900;
+    letter-spacing: -0.013em;
+  }
+
+  h6 {
+    @apply text-xs font-medium tracking-tight leading-normal text-gray-900;
+    letter-spacing: -0.011em;
+  }
+
+  /* Body text improvements */
+  p {
+    @apply text-sm leading-relaxed text-gray-700;
+    letter-spacing: -0.011em;
+  }
+
+  /* Link styles */
+  a {
+    @apply transition-colors duration-200;
+  }
+
+  /* Button improvements */
+  button {
+    @apply font-medium tracking-tight;
+    letter-spacing: -0.011em;
+  }
+
+  /* Input improvements */
+  input,
+  textarea,
+  select {
+    @apply font-normal;
+    letter-spacing: -0.011em;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Consistent transitions */
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow,
+    transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+/* Focus styles */
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+a:focus-visible {
+  @apply outline-none ring-2 ring-blue-500 ring-offset-2;
+}
+
+/* Card hover effects */
+.hover-lift {
+  @apply transition-transform duration-200 ease-out;
+}
+
+.hover-lift:hover {
+  @apply transform -translate-y-0.5 shadow-lg;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.sidebar {
+  height: calc(100vh - 64px);
+  position: sticky;
+  top: 64px;
+}
+
+.post-card {
+  transition: all 0.3s ease;
+}
+
+.post-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.member-card {
+  transition: all 0.3s ease;
+}
+
+.member-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+}
+
+.resource-card {
+  transition: all 0.3s ease;
+}
+
+.resource-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+}
+
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: #ef4444;
+  color: white;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-dropdown {
+  width: 320px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.search-results {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* AI Chat specific styles */
+.message-bubble {
+  max-width: 80%;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.chat-container {
+  height: calc(100vh - 250px);
+  min-height: 500px;
+}
+
+.chat-messages {
+  height: calc(100% - 70px);
+  overflow-y: auto;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce {
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+.animate-bounce {
+  animation: bounce 1.4s infinite;
+}
