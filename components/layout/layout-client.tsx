@@ -1,7 +1,8 @@
 "use client"
 
-import React from "react"
-import { usePathname } from "next/navigation"
+import React, { useEffect } from "react"
+import { usePathname, useRouter } from "next/navigation"
+import { useUser } from "@/lib/user-context"
 import Header from "./header"
 import Sidebar from "./sidebar"
 
@@ -11,15 +12,36 @@ interface LayoutClientProps {
 
 export default function LayoutClient({ children }: LayoutClientProps) {
   const pathname = usePathname()
-  
+  const router = useRouter()
+  const { userInfo, isLoading } = useUser()
+
   // Pages that should NOT have header and sidebar
   const publicPages = ['/login', '/register', '/welcome-wizard']
   const shouldShowLayout = !publicPages.some(page => pathname.startsWith(page))
-  
+
+  // Redirect to login if not authenticated and not on a public page
+  useEffect(() => {
+    if (!isLoading && !userInfo && !publicPages.some(page => pathname.startsWith(page))) {
+      router.push('/login')
+    }
+  }, [userInfo, isLoading, pathname, router])
+
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
+          <p className="mt-2 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
   if (!shouldShowLayout) {
     return <div className="min-h-screen bg-gray-50">{children}</div>
   }
-  
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
