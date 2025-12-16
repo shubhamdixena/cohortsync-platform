@@ -63,10 +63,15 @@ export function UserProvider({ children }: { children: ReactNode }) {
       }
 
       console.log('fetchUser: Authenticated as', user.id, 'fetching from /api/users/me...')
-      const response = await fetch('/api/users/me')
-      
+      const response = await fetch('/api/users/me', {
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+
       console.log('fetchUser: API response status:', response.status)
-      
+
       if (response.ok) {
         const userData = await response.json()
         const name = userData.name || 'User'
@@ -109,7 +114,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
         } catch (e) {
           errorData = { error: 'Failed to read response' };
         }
-        console.error('fetchUser: API error', { status: response.status, error: errorData })
+
+        // Only log as error if it's not a 401 (401 is expected when not logged in)
+        if (response.status === 401) {
+          console.log('fetchUser: Not authenticated (expected on login page)')
+        } else {
+          console.error('fetchUser: API error', { status: response.status, error: errorData })
+        }
         
         // Try to use cached data if API fails
         if (typeof window !== 'undefined') {
