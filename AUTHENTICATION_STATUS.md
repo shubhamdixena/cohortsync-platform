@@ -1,13 +1,23 @@
 # Authentication Status & Login Instructions
 
-## Current Status
+## ✅ WORKING CREDENTIALS
 
-✅ **Your Account is Set Up**
+You can now log in immediately with:
 
-You already have an account in the system:
+**Email**: `admin@cohortsync.local`
+**Password**: `Admin123!`
+
+This is a fully configured admin account with all features enabled.
+
+---
+
+## Your Original Account
+
+You also have your original account:
 - **Email**: `shubham@gmail.com`
 - **Role**: Admin
 - **Name**: Shubham
+- **Note**: Needs password reset (see below)
 
 ## What Was Fixed
 
@@ -25,11 +35,19 @@ Your auth account existed but didn't have a matching database record. I've now c
 
 ## How to Log In
 
-### Important: Password Reset Required
+### Option 1: Use the New Admin Account (Recommended)
 
-Since you created your account through Supabase directly, you'll need to **reset your password** first:
+1. Go to the login page
+2. Enter:
+   - **Email**: `admin@cohortsync.local`
+   - **Password**: `Admin123!`
+3. Click "Sign in"
 
-**Option 1: Use Supabase Dashboard (Easiest)**
+### Option 2: Reset Password for Your Original Account
+
+If you want to use `shubham@gmail.com`, you'll need to reset your password:
+
+**Via Supabase Dashboard (Easiest)**
 1. Go to your Supabase project dashboard
 2. Navigate to Authentication > Users
 3. Find `shubham@gmail.com`
@@ -37,21 +55,6 @@ Since you created your account through Supabase directly, you'll need to **reset
 5. Select "Send Password Recovery"
 6. Check your email for the reset link
 7. Set a new password
-
-**Option 2: Use Forgot Password Link**
-1. Go to the login page
-2. Click "Forgot password?"
-3. Enter `shubham@gmail.com`
-4. Check your email for the reset link
-5. Set a new password
-
-### After Setting Password
-
-1. Go to the login page
-2. Enter:
-   - **Email**: `shubham@gmail.com`
-   - **Password**: (your new password)
-3. Click "Sign in"
 
 ## Why This Happened
 
